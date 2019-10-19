@@ -87,7 +87,21 @@ Documentation: http://man7.org/linux/man-pages/man7/netlink.7.html
 
 ### Link Management
 
+Link state is the main idea of a stateful firewall. If a link (like established TCP link) or a virtual link (like ICMP echo or DNS query) exists in the link table of firewall,
+the subsequent packets of the link will be accepted without further checking. The link management part of the program examines, looks up for and delete links. When a packet comes,
+link manager tells whether it belongs to an existing link, if not, then send it to rule manager. Hash table is used to build link table for efficiency. 
+
+Include: linux/timer.h (Timer is needed for removing expired links)
+
+APIs Used: init\_timer, add\_timer, mod\_timer, del\_timer
+
+Did not use kernel hash library. Built a simple one instead.
+
 ### Rule Management
+
+Rule is user-defined filter logic. The rule manager handles modifying rule table, setting default policy and checking link establish request (sent from link manager) per defined rules.
+If commands from external connector are got, rule manager adjusts rule table by adding, deleting, displaying or saving; If new request from link manager is obtained, it tracerses rule table for matching a response.
+Linear table is used for efficiency and convenience. 
 
 
 ## External Connector
